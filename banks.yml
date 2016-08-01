@@ -14,6 +14,9 @@
   remote_user: root
 
   roles:
+    - {role: gbankTofasta, tags: ["berlin66"],
+       bank_name: berlin66,
+       bank_src: "berlin.gb" }
     - {role: genbank_genome, tags: ['cdc1551'],
        bank_name: m_tuberculosis_CDC1551,
        bank_src: "ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/Mycobacterium_tuberculosis_CDC1551_uid223/AE000516.gbk"}
