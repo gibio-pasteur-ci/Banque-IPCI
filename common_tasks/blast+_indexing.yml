@@ -42,10 +42,11 @@
   become: yes
   become_user: "{{ bank_user }}"
   shell: >
-    source "{{ module_init }}" && \
+    source {{ module_init }} && \
+    module purge && \
     module load blast+/{{ blast_plus_vers }} && \
-    makeblastdb -title {{ bank_name }} -in {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa -dbtype {{ dbtype | default('nucl') }} -logfile /dev/null
-    chdir={{ bank_root }}/{{ bank_name }}/blast+
+    makeblastdb -title {{ bank_name }} -in {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa -dbtype {{ dbtype | default('nucl') }}
+    chdir={{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}
 
 - name: Moving and renaming "{{ bank_name }}/{{ blast_plus_vers }}" blast indexes in right directory
   become: yes
