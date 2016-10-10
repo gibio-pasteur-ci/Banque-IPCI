@@ -17,9 +17,10 @@
     - {role: genbank_genome, tags: ['cdc1551'],
        bank_name: m_tuberculosis_CDC1551,
        bank_src: "ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/Mycobacterium_tuberculosis_CDC1551_uid223/AE000516.gbk"}
-    - {role: fasta_genome, tags: ['yersinia_nuc'],
-       bank_name: yersinia_pestis_nuc,
-       bank_src: "ftp://ftp.ncbi.nih.gov/genomes/refseq/bacteria/Yersinia_pestis/reference/GCF_000009065.1_ASM906v1/GCF_000009065.1_ASM906v1_genomic.fna.gz"}
+    - {role: fasta_genome, tags: ['yersinia'],
+       bank_name: yersinia_pestis,
+       bank_src: "ftp://ftp.ncbi.nih.gov/genomes/refseq/bacteria/Yersinia_pestis/reference/GCF_000009065.1_ASM906v1/GCF_000009065.1_ASM906v1_genomic.fna.gz",
+       large: true}
     - {role: fasta_bank, tags: ['silva_SSU', 'silva'],
        bank_name: silva_SSU,
        bank_src: "ftp://ftp.arb-silva.de/current/Exports/SILVA_128_SSURef_Nr99_tax_silva.fasta.gz"}
@@ -37,5 +38,6 @@
        bank_src: "ftp://ftp.ncbi.nih.gov/blast/db/FASTA/nt.gz"}
     - {role: genbank_bank, tags: ['swissprot'],
        bank_name: swissprot,
-       bank_src: "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.dat.gz"}
+       bank_src: "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.dat.gz",
+       dbtype: 'prot'}
 
