@@ -24,7 +24,7 @@
   file: path={{bank_root}}/index/soap/{{ soap_vers }}/{{ item | basename }}
         state=absent
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/soap/*"
+    - "{{ bank_root }}/{{ bank_name }}/soap/{{ soap_vers}/}*"
 
 - name: Cleaning "{{ bank_name }}" old soap indexes
   become: yes
