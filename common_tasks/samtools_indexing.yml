@@ -12,7 +12,7 @@
 - name: Creating samtools directory for genome "{{ bank_name }}"
   become: yes
   become_user: "{{ bank_user }}"
-  file: path={{ bank_root }}/{{ bank_name }}/samtools
+  file: path={{ bank_root }}/{{ bank_name }}/samtools/{{ samtools_vers }}
         state=directory
         owner={{ bank_user }}
         group={{ bank_group }}
@@ -21,10 +21,10 @@
 - name: Cleaning "{{ bank_name }}" samtools indexes links
   become: yes
   become_user: "{{ bank_user }}"
-  file: path={{bank_root}}/index/samtools/{{ item | basename }}
+  file: path={{bank_root}}/index/samtools/{{ samtools_vers }}/{{ item | basename }}
         state=absent
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/samtools/*"
+    - "{{ bank_root }}/{{ bank_name }}/samtools/{{ samtools_vers }}/*"
 
 - name: Cleaning "{{ bank_name }}" old samtools indexes
   become: yes
@@ -33,7 +33,7 @@
     path={{ item }}
     state=absent
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/samtools/*"
+    - "{{ bank_root }}/{{ bank_name }}/samtools/{{ samtools_vers }}/*"
 
 - name: Indexing {{ bank_name }} for samtools
   become: yes
@@ -42,13 +42,23 @@
     source "{{ module_init }}" && \
     module load samtools/{{ samtools_vers }} && \
     samtools faidx {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa
+    chdir={{ bank_root }}/{{ bank_name }}/samtools/{{ samtools_vers }}
+
+- name: Moving "{{ bank_name }}/{{ samtools_vers }}" santools indexes in right directory
+  become: yes
+  become_user: "{{ bank_user }}"
+  command: mv {{ item }}  {{ bank_root }}/{{ bank_name }}/samtools/{{ samtools_vers }}
+  with_fileglob:
+    - "{{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa.*"
+
 
 - name: Creating links for {{ bank_name }} samtools indexes
   become: yes
   become_user: "{{ bank_user }}"
   file: >
     src={{ item }}
-    dest={{ bank_root }}/index/samtools/{{ item | basename }}
+    dest={{ bank_root }}/index/samtools/{{ samtools_vers }}/{{ item | basename }}
     state=link
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/samtools/*"
+    - "{{ bank_root }}/{{ bank_name }}/samtools/{{ samtools_vers }}/*"
+
