@@ -5,7 +5,7 @@ bank_group: bank
 bank_root: /data/bank
 module_init: /local/gensoft2/adm/etc/profile.d/modules.sh
 indexers:
-  - tool: blast
+  - tool: blast2
     vers:
       - '2.2.26'
   - tool: blast+
