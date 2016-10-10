@@ -46,7 +46,7 @@
     source "{{ module_init }}" && \
     module load blast/{{ blast2_vers }} && \
     formatdb  -t "{{ bank_name }}" -n "{{ bank_name }}" -i {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa  -p T -l /dev/null
-    chdir={{ bank_root }}/{{ bank_name }}/blast2
+    chdir={{ bank_root }}/{{ bank_name }}/blast2/{{ blast2_vers }}
   when:
     - dbtype is defined
     - dbtype == "prot"
@@ -58,16 +58,9 @@
     source "{{ module_init }}" && \
     module load blast/{{ blast2_vers }} && \
     formatdb  -t "{{ bank_name }}" -n "{{ bank_name }}" -i {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa  -p T -l /dev/null
-    chdir={{ bank_root }}/{{ bank_name }}/blast2
+    chdir={{ bank_root }}/{{ bank_name }}/blast2/{{ blast2_vers }}
   when: (dbtype is undefined) or (dbtype == "prot")
 
-
-- name: Moving and renaming "{{ bank_name }}/{{ blast2_vers }}" blast indexes in right directory
-  become: yes
-  become_user: "{{ bank_user }}"
-  command: mv {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa{{ item | splitext | last }} {{ bank_root }}/{{ bank_name }}/blast2/{{ blast2_vers }}/{{ bank_name }}{{ item | splitext | last }}
-  with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa.*"
 
 - name: Creating links to blast2 indexes
   become: yes
