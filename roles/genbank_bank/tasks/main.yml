@@ -45,6 +45,6 @@
 
 - name: Start blast+ indexing
   include: common_tasks/blast+_indexing.yml
-  with_items: "{{ blast+[0].vers }}"
+  with_items: "{{ blast_plus[0].vers }}"
   loop_control:
     loop_var: blast_plus_vers
