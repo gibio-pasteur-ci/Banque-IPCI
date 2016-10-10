@@ -33,7 +33,7 @@
   with_fileglob:
     - "{{ bank_root }}/{{ bank_name }}/blast2/{{ blast2_vers }}/*"
 
-- fail: msg="Invalid value for dbtype must be nucl or pro"
+- fail: msg="Invalid value for dbtype must be nucl or prot"
   when:
     - dbtype is defined
     - dbtype  != 'nucl' or dbtype != 'prot'
@@ -44,7 +44,7 @@
   become_user: "{{ bank_user }}"
   shell: >
     source "{{ module_init }}" && \
-    module load blast2/{{ blast2_vers }} && \
+    module load blast/{{ blast2_vers }} && \
     formatdb  -t "{{ bank_name }}" -n "{{ bank_name }}" -i {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa  -p T -l /dev/null
     chdir={{ bank_root }}/{{ bank_name }}/blast2
   when:
@@ -56,7 +56,7 @@
   become_user: "{{ bank_user }}"
   shell: >
     source "{{ module_init }}" && \
-    module load blast2/{{ blast2_vers }} && \
+    module load blast/{{ blast2_vers }} && \
     formatdb  -t "{{ bank_name }}" -n "{{ bank_name }}" -i {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa  -p T -l /dev/null
     chdir={{ bank_root }}/{{ bank_name }}/blast2
   when: (dbtype is undefined) or (dbtype == "prot")
