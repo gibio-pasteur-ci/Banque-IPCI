@@ -9,10 +9,10 @@
 # (GPLv3). See the LICENSE file for details.                                   #
 ################################################################################
 
-- name: Creating picard directory for "{{ bank_name }}" genome
+- name: Creating picard directory for "{{ bank_name }}/{{ picard_vers }}" genome
   become: yes
   become_user: "{{ bank_user }}"
-  file: path={{ bank_root }}/{{ bank_name }}/picard
+  file: path={{ bank_root }}/{{ bank_name }}/picard/{{ picard_vers }}
         state=directory
         owner={{ bank_user }}
         group={{ bank_group }}
@@ -21,34 +21,34 @@
 - name: Cleaning "{{ bank_name }}" picard indexes links
   become: yes
   become_user: "{{ bank_user }}"
-  file: path={{bank_root}}/index/picard/{{ item | basename }}
+  file: path={{bank_root}}/index/picard/{{ picard_vers }}/{{ item | basename }}
         state=absent
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/picard/*"
+    - "{{ bank_root }}/{{ bank_name }}/picard/{{ picard_vers }}/*"
 
-- name: Cleaning "{{ bank_name }}" old picard indexes
+- name: Cleaning "{{ bank_name }}" old picard "{{ picard_vers }}" indexes
   become: yes
   become_user: "{{ bank_user }}"
   file: >
     path={{ item }}
     state=absent
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/picard/*"
+    - "{{ bank_root }}/{{ bank_name }}/picard/{{ picard_vers }}/*"
 
-- name: Indexing "{{ bank_name }}" for picard
+- name: Indexing "{{ bank_name }}" for picard "{{ picard_vers }}"
   become: yes
   become_user: "{{ bank_user }}"
   shell: >
     source "{{ module_init }}" && \
     module load picard-tools/{{ picard_vers }} && \
-    CreateSequenceDictionary REFERENCE={{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa  OUTPUT={{ bank_root }}/{{ bank_name }}/picard/{{ bank_name }}.dict CREATE_INDEX=true
+    CreateSequenceDictionary REFERENCE={{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa  OUTPUT={{ bank_root }}/{{ bank_name }}/picard/{{ picard_vers }}/{{ bank_name }}.dict CREATE_INDEX=true
 
-- name: Creating links for "{{ bank_name }}" picard indexes
+- name: Creating links for "{{ bank_name }}" picard/"{{ picard_vers }}"  indexes
   become: yes
   become_user: "{{ bank_user }}"
   file: >
     src={{ item }}
-    dest={{ bank_root }}/index/picard/{{ item | basename }}
+    dest={{ bank_root }}/index/picard/{{ picard_vers }}/{{ item | basename }}
     state=link
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/picard/{{ bank_name }}*"
+    - "{{ bank_root }}/{{ bank_name }}/picard/{{ picard_vers }}/{{ bank_name }}*"
