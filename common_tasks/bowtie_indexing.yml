@@ -40,6 +40,7 @@
   become_user: "{{ bank_user }}"
   shell: >
     source "{{ module_init }}" && \
+    module purge && \
     module load bowtie/{{ bowtie_vers }} && \
     bowtie-build -q {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa {{ bank_root }}/{{ bank_name }}/bowtie/{{ bowtie_vers }}/{{ bank_name }}
 

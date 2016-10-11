@@ -48,6 +48,7 @@
   become_user: "{{ bank_user }}"
   shell: >
     source "{{ module_init }}" && \
+    module purge && \
     module load soap/{{ soap_vers }} && \
     2bwt-builder {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa  1>/dev/null
   args:
