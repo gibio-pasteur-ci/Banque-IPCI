@@ -31,10 +31,10 @@
   become: yes
   become_user: "{{ bank_user }}"
   file: src={{ item }}
-        dest={{ bank_root }}/{{ bank_name }}/gatk/{{ gatk_vers }}{{ item | basename }}
+        dest={{ bank_root }}/{{ bank_name }}/gatk/{{ gatk_vers }}/{{ item | basename }}
         state=link
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/picard/{{ picard_vers}}*.dict"
+    - "{{ bank_root }}/{{ bank_name }}/picard/{{ picard_vers}}/*.dict"
 
 - name: Creating links for "{{ bank_name }}/{{ gatk_vers }}" gatk indexes
   become: yes
@@ -45,3 +45,4 @@
     state=link
   with_fileglob:
     - "{{ bank_root }}/{{ bank_name }}/gatk/{{ gatk_vers }}/*"
+
