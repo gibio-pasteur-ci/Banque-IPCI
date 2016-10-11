@@ -33,10 +33,15 @@
   with_fileglob:
     - "{{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/*"
 
+- set_fact: 
+    type_allowed:
+        - nucl
+        - prot
+
 - fail: msg="Invalid value for dbtype must be nucl or prot"
   when:
     - dbtype is defined
-    - dbtype != 'nucl' or dbtype != 'prot'
+    - dbtype not in type_allowed
 
 - name: Creating blast+ indexes for  "{{ bank_name }}/{{ blast_plus_vers }}"
   become: yes

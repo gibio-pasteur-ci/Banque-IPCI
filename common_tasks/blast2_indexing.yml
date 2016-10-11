@@ -33,10 +33,15 @@
   with_fileglob:
     - "{{ bank_root }}/{{ bank_name }}/blast2/{{ blast2_vers }}/*"
 
+- set_fact: 
+    type_allowed:
+        - nucl
+        - prot
+
 - fail: msg="Invalid value for dbtype must be nucl or prot"
   when:
     - dbtype is defined
-    - dbtype  != 'nucl' or dbtype != 'prot'
+    - dbtype not in type_allowed
 
 
 - name: Creating blast2 indexes for  "{{ bank_name }}/{{ blast2_vers }}"
@@ -59,7 +64,7 @@
     module load blast/{{ blast2_vers }} && \
     formatdb  -t "{{ bank_name }}" -n "{{ bank_name }}" -i {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa  -p T -l /dev/null
     chdir={{ bank_root }}/{{ bank_name }}/blast2/{{ blast2_vers }}
-  when: (dbtype is undefined) or (dbtype == "prot")
+  when: dbtype is undefined or dbtype == "prot"
 
 
 - name: Creating links to blast2 indexes
