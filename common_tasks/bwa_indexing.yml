@@ -35,8 +35,6 @@
   with_fileglob:
     - "{{ bank_root }}/{{ bank_name }}/bwa/{{ bwa_vers }}/*"
 
-- debug: msg="large = {{ large }}"
-
 - name: Indexing "{{ bank_name }}/{{ bwa_vers }}" for bwa for large genome.
   become: yes
   become_user: "{{ bank_user }}"
