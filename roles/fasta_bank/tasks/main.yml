@@ -15,15 +15,23 @@
 
 - include: common_tasks/get_data.yml ext=fa
 
-- name: Reformating "{{ bank_name }}" in fasta format
+- name: Reformating "{{ bank_name }}" in fasta format with label
   become: yes
   become_user: "{{ bank_user }}"
   shell:
     "source {{ module_init }} && \
      module load dbtools/0.99b && \
-     fasta2fasta -d {{ bank_name }} {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_name }}.fa > {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa"
+     fasta2fasta -d {{ bank_name }} {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_name }}.fa > {{ bank_root }}/{{ bank_name }}/fasta/with_label/{{ bank_name }}.fa"
 
 - include: common_tasks/link_fasta.yml
+
+- name: Reformating "{{ bank_name }}" in fasta format without label
+  become: yes
+  become_user: "{{ bank_user }}"
+  shell:
+    "source {{ module_init }} && \
+     module load dbtools/0.99b && \
+     fasta2fasta {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_name }}.fa > {{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa"
 
 - set_fact: blast2="{{ indexers | selectattr('tool', 'equalto', 'blast')|list}}"
 - name: Start blast2 indexing

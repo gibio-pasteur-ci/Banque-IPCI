@@ -35,6 +35,14 @@
   with_fileglob:
     - "{{ bank_root }}/{{ bank_name }}/bwa/{{ bwa_vers }}/*"
 
+- name: Linking fasta
+  become: yes
+  become_user: "{{ bank_user }}"
+  file: >
+    src={{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa
+    dest={{ bank_root }}/{{ bank_name }}/bwa/{{ bwa_vers }}/{{ bank_name }}.fa
+    state=link
+
 - name: Indexing "{{ bank_name }}/{{ bwa_vers }}" for bwa for large genome.
   become: yes
   become_user: "{{ bank_user }}"
@@ -42,7 +50,7 @@
     source "{{ module_init }}" && \
     module purge && \
     module load bwa/{{ bwa_vers }} && \
-    bwa index -a bwtsw -p {{ bank_root }}/{{ bank_name }}/bwa/{{ bwa_vers }}/{{ bank_name }} {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa
+    bwa index -a bwtsw -p {{ bank_root }}/{{ bank_name }}/bwa/{{ bwa_vers }}/{{ bank_name }} {{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa
   when: large
 
 - name: Indexing "{{ bank_name }}/{{ bwa_vers }}" for bwa small genome

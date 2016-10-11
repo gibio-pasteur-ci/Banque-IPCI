@@ -45,9 +45,8 @@
     source {{ module_init }} && \
     module purge && \
     module load blast+/{{ blast_plus_vers }} && \
-    makeblastdb -title {{ bank_name }} -in {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa -dbtype {{ dbtype | default('nucl') }} -out {{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}//{{ bank_name }}
+    makeblastdb -title {{ bank_name }} -in {{ bank_root }}/{{ bank_name }}/fasta/with_label/{{ bank_name }}.fa -dbtype {{ dbtype | default('nucl') }} -out {{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}//{{ bank_name }}
     chdir={{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}
-
 
 - name: Creating links to blast+ indexes
   become: yes

@@ -31,3 +31,5 @@
   with_items:
     - uncompressed
     - fasta
+    - fasta/without_label
+    - fasta/with_label

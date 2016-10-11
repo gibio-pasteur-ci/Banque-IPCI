@@ -35,6 +35,14 @@
   with_fileglob:
     - "{{ bank_root }}/{{ bank_name }}/picard/{{ picard_vers }}/*"
 
+- name: Linking fasta
+  become: yes
+  become_user: "{{ bank_user }}"
+  file: >
+    src={{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa
+    dest={{ bank_root }}/{{ bank_name }}/picard/{{ picard_vers }}/{{ bank_name }}.fa
+    state=link
+
 - name: Indexing "{{ bank_name }}" for picard "{{ picard_vers }}"
   become: yes
   become_user: "{{ bank_user }}"
@@ -42,7 +50,7 @@
     source "{{ module_init }}" && \
     module purge && \
     module load picard-tools/{{ picard_vers }} && \
-    CreateSequenceDictionary REFERENCE={{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa  OUTPUT={{ bank_root }}/{{ bank_name }}/picard/{{ picard_vers }}/{{ bank_name }}.dict CREATE_INDEX=true
+    CreateSequenceDictionary REFERENCE={{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa  OUTPUT={{ bank_root }}/{{ bank_name }}/picard/{{ picard_vers }}/{{ bank_name }}.dict CREATE_INDEX=true
 
 - name: Creating links for "{{ bank_name }}" picard/"{{ picard_vers }}"  indexes
   become: yes

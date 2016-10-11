@@ -15,18 +15,25 @@
 
 - include: common_tasks/get_data.yml ext=gbk
 
-- name: reformating "{{ bank_name }}" in fasta format
+- name: reformating "{{ bank_name }}" in fasta format with label
   become: yes
   become_user: "{{ bank_user }}"
   shell:
     "source {{ module_init }} && \
      module load dbtools/0.99b && \
-     flat2fasta -d {{ bank_name }} {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_name }}.gbk > {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa"
+     flat2fasta -d {{ bank_name }} {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_name }}.gbk > {{ bank_root }}/{{ bank_name }}/fasta/with_label/{{ bank_name }}.fa"
+
+- name: reformating "{{ bank_name }}" in fasta format without label
+  become: yes
+  become_user: "{{ bank_user }}"
+  shell:
+    "source {{ module_init }} && \
+     module load dbtools/0.99b && \
+     flat2fasta {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_name }}.gbk > {{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa"
 
 - include: common_tasks/link_fasta.yml
 
 - set_fact: golden="{{ indexers | selectattr('tool', 'equalto', 'golden')|list}}"
-
 - name: Start golden indexing
   include: common_tasks/golden_indexing.yml
   with_items: "{{ golden[0].vers }}"
@@ -34,7 +41,6 @@
     loop_var: golden_vers
 
 - set_fact: blast2="{{ indexers | selectattr('tool', 'equalto', 'blast2')|list}}"
-
 - name: Start blast2 indexing
   include: common_tasks/blast2_indexing.yml
   with_items: "{{ blast2[0].vers }}"
@@ -42,7 +48,6 @@
     loop_var: blast2_vers
 
 - set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
-
 - name: Start blast+ indexing
   include: common_tasks/blast+_indexing.yml
   with_items: "{{ blast_plus[0].vers }}"
