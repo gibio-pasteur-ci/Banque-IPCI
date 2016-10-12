@@ -51,8 +51,10 @@
     source "{{ module_init }}" && \
     module purge && \
     module load blast/{{ blast2_vers }} && \
-    formatdb  -t "{{ bank_name }}" -n "{{ bank_name }}" -i {{ bank_root }}/{{ bank_name }}/fasta/with_label/{{ bank_name }}.fa  -p T -l /dev/null
+    formatdb  -t "{{ item | basename | splitext | first }}" -n "{{ item | basename | splitext | first }}" -i {{ item }}  -p T -l /dev/null
     chdir={{ bank_root }}/{{ bank_name }}/blast2/{{ blast2_vers }}
+  with_fileglob:
+    - "{{ bank_root }}/{{ bank_name }}/fasta/with_label/*.fa"
   when:
     - dbtype is defined
     - dbtype == "prot"
@@ -64,8 +66,10 @@
     source "{{ module_init }}" && \
     module purge && \
     module load blast/{{ blast2_vers }} && \
-    formatdb  -t "{{ bank_name }}" -n "{{ bank_name }}" -i {{ bank_root }}/{{ bank_name }}/fasta/with_label/{{ bank_name }}.fa  -p F -l /dev/null
+    formatdb  -t "{{ item | basename | splitext | first }}" -n "{{ item | basename | splitext | first }}" -i {{ item }}  -p F -l /dev/null
     chdir={{ bank_root }}/{{ bank_name }}/blast2/{{ blast2_vers }}
+  with_fileglob:
+    - "{{ bank_root }}/{{ bank_name }}/fasta/with_label/*.fa"
   when: dbtype is undefined or dbtype == "nucl"
 
 

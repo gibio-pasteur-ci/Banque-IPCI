@@ -40,8 +40,10 @@
     source {{ module_init }} && \
     module purge && \
     module load blast+/{{ blast_plus_vers }} && \
-    makembindex -iformat blastdb -input {{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/{{bank_name }} -logfile /dev/null
+    makembindex -iformat blastdb -input {{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/{{ item | basename | splitext | first }} -logfile /dev/null
     chdir={{ bank_root }}/{{ bank_name }}/megablast/{{ blast_plus_vers }}
+  with_fileglob:
+    - "{{ bank_root }}/{{ bank_name }}/fasta/with_label/*.fa"
 
 - name: Moving "{{ bank_name }}/{{ blast_plus_vers }}" megablast indexes in right directory
   become: yes

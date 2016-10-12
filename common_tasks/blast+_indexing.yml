@@ -50,8 +50,10 @@
     source {{ module_init }} && \
     module purge && \
     module load blast+/{{ blast_plus_vers }} && \
-    makeblastdb -title {{ bank_name }} -in {{ bank_root }}/{{ bank_name }}/fasta/with_label/{{ bank_name }}.fa -dbtype {{ dbtype | default('nucl') }} -out {{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/{{ bank_name }}
+    makeblastdb -title {{ item | basename | splitext | first }} -in {{ item }} -dbtype {{ dbtype | default('nucl') }} -out {{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/{{ item | basename | splitext | first }}
     chdir={{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}
+  with_fileglob:
+    - "{{ bank_root }}/{{ bank_name }}/fasta/with_label/*.fa"
 
 - name: Creating links to blast+ indexes
   become: yes
