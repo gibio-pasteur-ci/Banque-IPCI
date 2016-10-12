@@ -1,0 +1,43 @@
+---
+################################################################################
+# Bio-DAMNED - Bio-Data Ansible MaNagED                                        #
+#                                                                              #
+# Authors: Bertrand Néron                                                      #
+# Copyright © 2016  Institut Pasteur (Paris).                                  #
+#                                                                              #
+# Bio-DAMNED is distributed under the terms of the GNU General Public License  #
+# (GPLv3). See the LICENSE file for details.                                   #
+################################################################################
+
+- name: Creating bank "{{ bank_name }}" bdb directories
+  become: yes
+  become_user: "{{ bank_user }}"
+  file: path={{ bank_root }}/{{ bank_name }}/bdb/
+        state=directory
+        owner={{ bank_user }}
+        group={{ bank_group }}
+        mode=0775
+
+- name: cleaning "{{ bank_name }}" taxodb_ncbi indexes
+  become: yes
+  become_user: "{{ bank_user }}"
+  file: path={{bank_root}}/{{bank_name}}/bdb/taxodb.bdb
+        state=absent
+
+- name: creating "{{ bank_name }}" new taxodb_ncbi indexes
+  become: yes
+  become_user: "{{ bank_user }}"
+  shell: >
+    source "{{ module_init }}" && \
+    module purge && \
+    module load taxodb/1.3 && \
+    taxodb.py -n {{ bank_root }}/{{ bank_name }}/uncompressed/names.dmp> -d {{ bank_root }}/{{ bank_name }}/nodes.dmp -b taxodb.bdb
+    chdir={{ bank_root }}/{{ bank_name }}/bdb/
+
+- name: creating "{{ bank_name }}" links to bdb indexes
+  become: yes
+  become_user: "{{ bank_user }}"
+  file:
+    src={{bank_root}}/{{ bank_name }}/bdb/taxodb.bdb
+    dest={{bank_root}}/index/bdb/taxodb.bdb
+    state=link
