@@ -21,13 +21,11 @@
        bank_name: yersinia_pestis,
        bank_src: "ftp://ftp.ncbi.nih.gov/genomes/refseq/bacteria/Yersinia_pestis/reference/GCF_000009065.1_ASM906v1/GCF_000009065.1_ASM906v1_genomic.fna.gz",
        large: true}
-    - {role: fasta_bank, tags: ['silva_SSU', 'silva'],
-       bank_name: silva_SSU,
-       bank_src: "ftp://ftp.arb-silva.de/current/Exports/SILVA_128_SSURef_Nr99_tax_silva.fasta.gz"}
     - {role: fasta_bank, tags: ['silva_LSU', 'silva'],
-       bank_name: silva_LSU,
-       bank_src: "ftp://ftp.arb-silva.de/current/Exports/SILVA_128_LSURef_tax_silva.fasta.gz"}
-    - {role: fasta_bank, tags: ['greengenes'],
+       bank_name: silva,
+       bank_src: ["ftp://ftp.arb-silva.de/current/Exports/SILVA_128_SSURef_Nr99_tax_silva.fasta.gz",
+                  "ftp://ftp.arb-silva.de/current/Exports/SILVA_128_LSURef_tax_silva.fasta.gz"]}
+    - {role: greengenes_bank, tags: ['greengenes'],
        bank_name: greengenes,
        bank_src: "ftp://greengenes.microbio.me/greengenes_release/current/gg_13_5_with_header.fasta.gz"}
     - {role: blast_bank, tags: ['ncbi_16s'],

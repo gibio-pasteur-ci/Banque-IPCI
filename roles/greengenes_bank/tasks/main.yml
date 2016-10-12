@@ -1,0 +1,65 @@
+---
+################################################################################
+# Bio-DAMNED - Bio-Data Ansible MaNagED                                        #
+#                                                                              #
+# Authors: Bertrand Néron                                                      #
+# Copyright © 2016  Institut Pasteur (Paris).                                  #
+#                                                                              #
+# Bio-DAMNED is distributed under the terms of the GNU General Public License  #
+# (GPLv3). See the LICENSE file for details.                                   #
+################################################################################
+
+- include: common_tasks/setup_general_bank_tree.yml
+
+- include: common_tasks/setup_specific_bank_tree.yml
+
+- include: common_tasks/get_data.yml ext=fa
+
+- name: Reformating "{{ bank_name }}" in fasta format with label
+  become: yes
+  become_user: "{{ bank_user }}"
+  shell:
+    "source {{ module_init }} && \
+     module load dbtools/0.99b && \
+     fasta2fasta -d {{ bank_name }} {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_name }}.fa > {{ bank_root }}/{{ bank_name }}/fasta/with_label/{{ bank_name }}.fa"
+
+- include: common_tasks/link_fasta.yml
+
+- name: Reformating "{{ bank_name }}" in fasta format without label
+  become: yes
+  become_user: "{{ bank_user }}"
+  shell:
+    "source {{ module_init }} && \
+     module load dbtools/0.99b && \
+     fasta2fasta {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_name }}.fa > {{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa"
+
+- set_fact: blast2="{{ indexers | selectattr('tool', 'equalto', 'blast')|list}}"
+- name: Start blast2 indexing
+  include: common_tasks/blast2_indexing.yml
+  with_items: "{{ blast2[0].vers }}"
+  loop_control:
+    loop_var: blast2_vers
+
+- set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
+- name: Start blast+ indexing
+  include: common_tasks/blast+_indexing.yml
+  with_items: "{{ blast_plus[0].vers }}"
+  loop_control:
+    loop_var: blast_plus_vers
+
+- set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
+- name: Start megablast indexing
+  include: common_tasks/megablast_indexing.yml
+  with_items: "{{ blast_plus[0].vers }}"
+  loop_control:
+    loop_var: blast_plus_vers
+
+- set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
+- name: Start megablast indexing
+  include: common_tasks/megablast_indexing.yml
+  with_items: "{{ blast_plus[0].vers }}"
+  loop_control:
+    loop_var: blast_plus_vers
+
+- name: Start taxo_rrna indexing
+  include: common_tasks/taxo_rrna_indexing.yml

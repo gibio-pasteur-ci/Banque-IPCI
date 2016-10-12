@@ -1,0 +1,104 @@
+---
+################################################################################
+# Bio-DAMNED - Bio-Data Ansible MaNagED                                        #
+#                                                                              #
+# Authors: Bertrand Néron                                                      #
+# Copyright © 2016  Institut Pasteur (Paris).                                  #
+#                                                                              #
+# Bio-DAMNED is distributed under the terms of the GNU General Public License  #
+# (GPLv3). See the LICENSE file for details.                                   #
+################################################################################
+
+- include: common_tasks/setup_general_bank_tree.yml
+
+- include: common_tasks/setup_specific_bank_tree.yml
+
+- include: common_tasks/get_data.yml ext=fa
+
+- name: Downloading silva
+  become: yes
+  become_user: "{{ bank_user }}"
+  # because of bug https://github.com/ansible/ansible-modules-core/issues/3661
+  # on ansible version 2.0.2.0 we cannot use get_url : workaround use command
+  #  get_url: ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/Mycobacterium_tuberculosis_CDC1551_uid223/AE000516.gbk
+  #curl ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/Mycobacterium_tuberculosis_CDC1551_uid223/AE000516.gbk -o {{bank_name}}.gbk
+  command: >
+    curl {{ item }} -o {{ bank_root }}/distbanks/{{ item|basename }}
+    creates={{ bank_root }}/distbanks/{{ item|basename }}
+  with_items: bank_src
+
+ - name: Uncompressing gzip {{ bank_name }}
+   become: yes
+   become_user: "{{ bank_user }}"
+   shell: >
+     gunzip -c {{ bank_root }}/distbanks/{{ bank_src|basename }} > {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_src | basename | splitext | first }}
+   with_items: bank_src
+
+- name: Reformating "{{ bank_name }}" in fasta format with label
+  become: yes
+  become_user: "{{ bank_user }}"
+  shell:
+    "source {{ module_init }} && \
+     module load dbtools/0.99b && \
+     fasta2fasta -d {{ bank_name }} {{ item }} > {{ bank_root }}/{{ bank_name }}/fasta/with_label/{{ item|basename }}"
+  with_fileglob:
+    "{{ bank_root }}/{{ bank_name }}/uncompressed/*.fasta"
+
+- name: Reformating "{{ bank_name }}" in fasta format without label
+  become: yes
+  become_user: "{{ bank_user }}"
+  shell:
+    "source {{ module_init }} && \
+     module load dbtools/0.99b && \
+     fasta2fasta {{ item }} > {{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ item|basename }}"
+  with_fileglob:
+    "{{ bank_root }}/{{ bank_name }}/uncompressed/*.fasta"
+
+- name: Renaming fasta files
+  become: yes
+  become_user: "{{ bank_user }}"
+  shell:
+    mv {{ item }} "`echo {{ item }} | sed -r "s#SILVA_(\w*)_(\w*)Ref_.*\.fasta#silva_\2.fa#g"`"
+  with_fileglob:
+     - "{{ bank_root }}/{{ bank_name }}/fasta/*/*.fasta"
+
+- name: Merge LSU and SSU fasta files
+  become: yes
+  become_user: "{{ bank_user }}"
+  shell:
+    cat {{ item }}/silva_*.fa > silva.fa
+  with_fileglob:
+     - "{{ bank_root }}/{{ bank_name }}/fasta/*
+
+- include: common_tasks/link_fasta.yml
+
+- set_fact: blast2="{{ indexers | selectattr('tool', 'equalto', 'blast')|list}}"
+- name: Start blast2 indexing
+  include: common_tasks/blast2_indexing.yml
+  with_items: "{{ blast2[0].vers }}"
+  loop_control:
+    loop_var: blast2_vers
+
+- set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
+- name: Start blast+ indexing
+  include: common_tasks/blast+_indexing.yml
+  with_items: "{{ blast_plus[0].vers }}"
+  loop_control:
+    loop_var: blast_plus_vers
+
+- set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
+- name: Start megablast indexing
+  include: common_tasks/megablast_indexing.yml
+  with_items: "{{ blast_plus[0].vers }}"
+  loop_control:
+    loop_var: blast_plus_vers
+
+- set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
+- name: Start megablast indexing
+  include: common_tasks/megablast_indexing.yml
+  with_items: "{{ blast_plus[0].vers }}"
+  loop_control:
+    loop_var: blast_plus_vers
+
+- name: Start taxo_rrna indexing
+  include: common_tasks/taxo_rrna_indexing.yml
