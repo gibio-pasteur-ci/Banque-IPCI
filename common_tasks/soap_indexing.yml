@@ -39,7 +39,7 @@
   become: yes
   become_user: "{{ bank_user }}"
   file:
-    src={{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa
+    src={{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa
     dest={{ bank_root }}/index/soap/{{ soap_vers }}/{{ bank_name }}.fa
     state=link
 
