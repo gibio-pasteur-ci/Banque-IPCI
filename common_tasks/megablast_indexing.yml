@@ -9,7 +9,14 @@
 # (GPLv3). See the LICENSE file for details.                                   #
 ################################################################################
 
-
+- name: Creating megablast directory for "{{ bank_name }}/{{ blast_plus_vers }}"
+  become: yes
+  become_user: "{{ bank_user }}"
+  file: path={{ bank_root }}/{{ bank_name }}/megablast/{{ blast_plus_vers }}
+        state=directory
+        owner={{ bank_user }}
+        group={{ bank_group }}
+        mode=0775
 
 - name: Cleaning "{{ bank_name }}/{{ blast_plus_vers }}" megablast+ indexes links
   become: yes
@@ -17,14 +24,14 @@
   file: path={{bank_root}}/index/blast+/{{ blast_plus_vers }}/{{ item | basename }}
         state=absent
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/{{ bank_name }}.idx"
+    - "{{ bank_root }}/{{ bank_name }}/megablast/{{ blast_plus_vers }}/*"
 
-- name: Cleaning "{{ bank_name }}/{{ blast_plus_vers }}" blast+ indexes
+- name: Cleaning "{{ bank_name }}/{{ blast_plus_vers }}" megablast+ indexes
   become: yes
   become_user: "{{ bank_user }}"
   file: path={{ item }} state=absent
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/*"
+    - "{{ bank_root }}/{{ bank_name }}/megablast/{{ blast_plus_vers }}/*"
 
 - name: Creating megablast indexes for  "{{ bank_name }}/{{ blast_plus_vers }}"
   become: yes
@@ -33,13 +40,23 @@
     source {{ module_init }} && \
     module purge && \
     module load blast+/{{ blast_plus_vers }} && \
-    makembindex -iformat blastdb -in {{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }} -logfile /dev/null
-    chdir={{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}
+    makembindex -iformat blastdb -input {{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/{{bank_name }} -logfile /dev/null
+    chdir={{ bank_root }}/{{ bank_name }}/megablast/{{ blast_plus_vers }}
+
+- name: Moving "{{ bank_name }}/{{ blast_plus_vers }}" megablast indexes in right directory
+  become: yes
+  become_user: "{{ bank_user }}"
+  command: mv {{ item }} {{ bank_root }}/{{ bank_name }}/megablast/{{ blast_plus_vers }}/
+  with_fileglob:
+    - "{{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/*.[is][dh][xd]"  
 
 - name: Creating links to megablast indexes
   become: yes
   become_user: "{{ bank_user }}"
   file: >
-    src={{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/{{ bank_name }}.idx
-    dest={{bank_root}}/index/blast+/{{ blast_plus_vers }}/{{ bank_name }}.idx
+    src={{ item }}
+    dest={{bank_root}}/index/blast+/{{ blast_plus_vers }}/{{ item | basename }}
     state=link
+  with_fileglob:
+    "{{ bank_root }}/{{ bank_name }}/megablast/{{ blast_plus_vers }}/*"
+
