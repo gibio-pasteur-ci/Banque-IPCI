@@ -8,3 +8,25 @@
 # Bio-DAMNED is distributed under the terms of the GNU General Public License  #
 # (GPLv3). See the LICENSE file for details.                                   #
 ################################################################################
+
+
+- include: common_tasks/setup_specific_bank_tree.yml
+
+
+- name: Downloading "{{ bank_src|basename }}"
+  become: yes
+  become_user: "{{ bank_user }}"
+  # because of bug https://github.com/ansible/ansible-modules-core/issues/3661
+  # on ansible version 2.0.2.0 we cannot use get_url : workaround use command
+  #  get_url: ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/Mycobacterium_tuberculosis_CDC1551_uid223/AE000516.gbk
+  #curl ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/Mycobacterium_tuberculosis_CDC1551_uid223/AE000516.gbk -o {{bank_name}}.gbk
+  command: >
+    curl {{ bank_src }} -o {{ bank_root }}/distbanks/{{ bank_src|basename }}
+    creates={{ bank_root }}/distbanks/{{ bank_src|basename }}
+  with_items: bank_src
+
+- name: Uncompressing {{ bank_src|basename }}
+    become: yes
+    become_user: "{{ bank_user }}"
+    unarchive: src={{ bank_root }}/distbanks/{{ bank_src|basename }} dest={{ bank_root }}/{{ bank_name }}/uncompressed/
+    with_items: bank_src

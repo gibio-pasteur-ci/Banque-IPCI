@@ -9,22 +9,15 @@
 # (GPLv3). See the LICENSE file for details.                                   #
 ################################################################################
 
-- name: Creating blast+ directory for "{{ bank_name }}/{{ blast_plus_vers }}"
-  become: yes
-  become_user: "{{ bank_user }}"
-  file: path={{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}
-        state=directory
-        owner={{ bank_user }}
-        group={{ bank_group }}
-        mode=0775
 
-- name: Cleaning "{{ bank_name }}/{{ blast_plus_vers }}" blast+ indexes links
+
+- name: Cleaning "{{ bank_name }}/{{ blast_plus_vers }}" megablast+ indexes links
   become: yes
   become_user: "{{ bank_user }}"
   file: path={{bank_root}}/index/blast+/{{ blast_plus_vers }}/{{ item | basename }}
         state=absent
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/*"
+    - "{{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/{{ bank_name }}.idx"
 
 - name: Cleaning "{{ bank_name }}/{{ blast_plus_vers }}" blast+ indexes
   become: yes
@@ -33,32 +26,20 @@
   with_fileglob:
     - "{{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/*"
 
-- set_fact: 
-    type_allowed:
-        - nucl
-        - prot
-
-- fail: msg="Invalid value for dbtype must be nucl or prot"
-  when:
-    - dbtype is defined
-    - dbtype not in type_allowed
-
-- name: Creating blast+ indexes for  "{{ bank_name }}/{{ blast_plus_vers }}"
+- name: Creating megablast indexes for  "{{ bank_name }}/{{ blast_plus_vers }}"
   become: yes
   become_user: "{{ bank_user }}"
   shell: >
     source {{ module_init }} && \
     module purge && \
     module load blast+/{{ blast_plus_vers }} && \
-    makeblastdb -title {{ bank_name }} -in {{ bank_root }}/{{ bank_name }}/fasta/with_label/{{ bank_name }}.fa -dbtype {{ dbtype | default('nucl') }} -out {{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/{{ bank_name }}
+    makembindex -iformat blastdb -in {{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }} -logfile /dev/null
     chdir={{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}
 
-- name: Creating links to blast+ indexes
+- name: Creating links to megablast indexes
   become: yes
   become_user: "{{ bank_user }}"
   file: >
-    src={{ item }}
-    dest={{bank_root}}/index/blast+/{{ blast_plus_vers }}/{{ bank_name }}{{ item | splitext | last }}
+    src={{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/{{ bank_name }}.idx
+    dest={{bank_root}}/index/blast+/{{ blast_plus_vers }}/{{ bank_name }}.idx
     state=link
-  with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/{{ bank_name }}.*"

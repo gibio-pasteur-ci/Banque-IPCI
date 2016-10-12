@@ -35,6 +35,14 @@
   with_fileglob:
     - "{{ bank_root }}/{{ bank_name }}/samtools/{{ samtools_vers }}/*"
 
+- name: Linking fasta
+  become: yes
+  become_user: "{{ bank_user }}"
+  file: >
+    src={{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa
+    dest={{ bank_root }}/{{ bank_name }}/samtools/{{ samtools_vers }}/{{ bank_name }}.fa
+    state=link
+
 - name: Indexing {{ bank_name }} for samtools
   become: yes
   become_user: "{{ bank_user }}"
@@ -42,7 +50,7 @@
     source "{{ module_init }}" && \
     module purge && \
     module load samtools/{{ samtools_vers }} && \
-    samtools faidx {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa
+    samtools faidx {{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa
     chdir={{ bank_root }}/{{ bank_name }}/samtools/{{ samtools_vers }}
 
 - name: Moving "{{ bank_name }}/{{ samtools_vers }}" santools indexes in right directory
@@ -50,7 +58,7 @@
   become_user: "{{ bank_user }}"
   command: mv {{ item }}  {{ bank_root }}/{{ bank_name }}/samtools/{{ samtools_vers }}
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa.*"
+    - "{{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa.*"
 
 
 - name: Creating links for {{ bank_name }} samtools indexes
