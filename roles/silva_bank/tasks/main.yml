@@ -13,8 +13,6 @@
 
 - include: common_tasks/setup_specific_bank_tree.yml
 
-- include: common_tasks/get_data.yml ext=fa
-
 - name: Downloading silva
   become: yes
   become_user: "{{ bank_user }}"
@@ -27,12 +25,20 @@
     creates={{ bank_root }}/distbanks/{{ item|basename }}
   with_items: bank_src
 
- - name: Uncompressing gzip {{ bank_name }}
-   become: yes
-   become_user: "{{ bank_user }}"
-   shell: >
-     gunzip -c {{ bank_root }}/distbanks/{{ bank_src|basename }} > {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_src | basename | splitext | first }}
-   with_items: bank_src
+- name: Uncompressing gzip "{{ bank_name }}"
+  become: yes
+  become_user: "{{ bank_user }}"
+  shell: >
+    gunzip -c {{ bank_root }}/distbanks/{{ item | basename }} > {{ bank_root }}/{{ bank_name }}/uncompressed/{{ item | basename | splitext | first }}
+  with_items: bank_src
+
+- name: Cleaning fasta files
+  become: yes
+  become_user: "{{ bank_user }}"
+  file: path="{{ item }}"
+        state=absent
+  with_fileglob:  
+    - "{{ bank_root }}/{{ bank_name }}/fasta/*/*"
 
 - name: Reformating "{{ bank_name }}" in fasta format with label
   become: yes
@@ -62,13 +68,21 @@
   with_fileglob:
      - "{{ bank_root }}/{{ bank_name }}/fasta/*/*.fasta"
 
-- name: Merge LSU and SSU fasta files
+- name: Merge LSU and SSU fasta with label files
   become: yes
   become_user: "{{ bank_user }}"
   shell:
-    cat {{ item }}/silva_*.fa > silva.fa
-  with_fileglob:
-     - "{{ bank_root }}/{{ bank_name }}/fasta/*
+    "cat *.fa > silva.fa"
+  args:
+    chdir: "{{ bank_root }}/{{ bank_name }}/fasta/with_label/"
+
+- name: Merge LSU and SSU fasta without label files
+  become: yes
+  become_user: "{{ bank_user }}"
+  shell:
+    "cat *.fa > silva.fa"
+  args:
+    chdir: "{{ bank_root }}/{{ bank_name }}/fasta/without_label/"
 
 - include: common_tasks/link_fasta.yml
 
@@ -82,13 +96,6 @@
 - set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
 - name: Start blast+ indexing
   include: common_tasks/blast+_indexing.yml
-  with_items: "{{ blast_plus[0].vers }}"
-  loop_control:
-    loop_var: blast_plus_vers
-
-- set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
-- name: Start megablast indexing
-  include: common_tasks/megablast_indexing.yml
   with_items: "{{ blast_plus[0].vers }}"
   loop_control:
     loop_var: blast_plus_vers
