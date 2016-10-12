@@ -40,6 +40,7 @@
   become_user: "{{ bank_user }}"
   shell: >
     source "{{ module_init }}" && \
+    module purge && \
     module load bwa/{{ bwa_vers }} && \
     bwa index -a bwtsw -p {{ bank_root }}/{{ bank_name }}/bwa/{{ bwa_vers }}/{{ bank_name }} {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa
   when: large
@@ -49,6 +50,7 @@
   become_user: "{{ bank_user }}"
   shell: >
     source "{{ module_init }}" && \
+    module purge && \
     module load bwa/{{ bwa_vers }} && \
     bwa index -p {{ bank_root }}/{{ bank_name }}/bwa/{{ bwa_vers }}/{{ bank_name }} {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa
   when: not large

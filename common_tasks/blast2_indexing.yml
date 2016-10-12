@@ -49,6 +49,7 @@
   become_user: "{{ bank_user }}"
   shell: >
     source "{{ module_init }}" && \
+    module purge && \
     module load blast/{{ blast2_vers }} && \
     formatdb  -t "{{ bank_name }}" -n "{{ bank_name }}" -i {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa  -p T -l /dev/null
     chdir={{ bank_root }}/{{ bank_name }}/blast2/{{ blast2_vers }}
@@ -61,6 +62,7 @@
   become_user: "{{ bank_user }}"
   shell: >
     source "{{ module_init }}" && \
+    module purge && \
     module load blast/{{ blast2_vers }} && \
     formatdb  -t "{{ bank_name }}" -n "{{ bank_name }}" -i {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa  -p T -l /dev/null
     chdir={{ bank_root }}/{{ bank_name }}/blast2/{{ blast2_vers }}

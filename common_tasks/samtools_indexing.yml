@@ -40,6 +40,7 @@
   become_user: "{{ bank_user }}"
   shell: >
     source "{{ module_init }}" && \
+    module purge && \
     module load samtools/{{ samtools_vers }} && \
     samtools faidx {{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa
     chdir={{ bank_root }}/{{ bank_name }}/samtools/{{ samtools_vers }}

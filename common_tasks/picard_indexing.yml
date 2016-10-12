@@ -40,6 +40,7 @@
   become_user: "{{ bank_user }}"
   shell: >
     source "{{ module_init }}" && \
+    module purge && \
     module load picard-tools/{{ picard_vers }} && \
     CreateSequenceDictionary REFERENCE={{ bank_root }}/{{ bank_name }}/fasta/{{ bank_name }}.fa  OUTPUT={{ bank_root }}/{{ bank_name }}/picard/{{ picard_vers }}/{{ bank_name }}.dict CREATE_INDEX=true
 
