@@ -9,6 +9,20 @@
 # (GPLv3). See the LICENSE file for details.                                   #
 ################################################################################
 
+# due to a fuzzy naming convetion between taxo_xxx tools we cannot support multiversion for now
+# the version used to creates index is harcoded :-(
+# the directory in index is not named as the tool but bdb
+# so this step is not include in setup_general_bank_tree
+
+- name: Creating bank "{{ bank_name }}" bdb directories
+  become: yes
+  become_user: "{{ bank_user }}"
+  file: path={{ bank_root }}/{{ bank_name }}/bdb/
+        state=directory
+        owner={{ bank_user }}
+        group={{ bank_group }}
+        mode=0775
+
 - name: Creating bank "{{ bank_name }}" bdb directories
   become: yes
   become_user: "{{ bank_user }}"
