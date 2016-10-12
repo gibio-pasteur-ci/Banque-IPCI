@@ -40,4 +40,10 @@
        bank_name: swissprot,
        bank_src: "ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.dat.gz",
        dbtype: 'prot'}
+    - {role: frogs, tags: ['frogs'],
+       bank_name: frogs,
+       bank_src: ["http://genoweb.toulouse.inra.fr/frogs_databanks/assignation/16S/silva_123_16S.tar.gz", 
+                  "http://genoweb.toulouse.inra.fr/frogs_databanks/assignation/18S/silva_119-1_18S.tar.gz", 
+                  "http://genoweb.toulouse.inra.fr/frogs_databanks/assignation/18S/silva_123_18S.tar.gz", 
+                  "http://genoweb.toulouse.inra.fr/frogs_databanks/assignation/23S/silva_123_23S.tar.gz"]}
 
