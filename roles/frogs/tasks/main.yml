@@ -61,7 +61,7 @@
 
 - set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
 - name: Start blast+ indexing
-  include: common_tasks/blast+_indexing_4_frogs.yml
+  include: common_tasks/blast+_indexing.yml
   with_items: "{{ blast_plus[0].vers }}"
   loop_control:
     loop_var: blast_plus_vers
