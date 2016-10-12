@@ -64,9 +64,9 @@
     source "{{ module_init }}" && \
     module purge && \
     module load blast/{{ blast2_vers }} && \
-    formatdb  -t "{{ bank_name }}" -n "{{ bank_name }}" -i {{ bank_root }}/{{ bank_name }}/fasta/with_label/{{ bank_name }}.fa  -p T -l /dev/null
+    formatdb  -t "{{ bank_name }}" -n "{{ bank_name }}" -i {{ bank_root }}/{{ bank_name }}/fasta/with_label/{{ bank_name }}.fa  -p F -l /dev/null
     chdir={{ bank_root }}/{{ bank_name }}/blast2/{{ blast2_vers }}
-  when: dbtype is undefined or dbtype == "prot"
+  when: dbtype is undefined or dbtype == "nucl"
 
 
 - name: Creating links to blast2 indexes
