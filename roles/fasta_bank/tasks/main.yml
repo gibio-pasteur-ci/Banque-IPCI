@@ -33,7 +33,7 @@
      module load dbtools/0.99b && \
      fasta2fasta {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_name }}.fa > {{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa"
 
-- set_fact: blast2="{{ indexers | selectattr('tool', 'equalto', 'blast')|list}}"
+- set_fact: blast2="{{ indexers | selectattr('tool', 'equalto', 'blast2')|list}}"
 - name: Start blast2 indexing
   include: common_tasks/blast2_indexing.yml
   with_items: "{{ blast2[0].vers }}"
