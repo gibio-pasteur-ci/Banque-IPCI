@@ -44,8 +44,8 @@
   shell: >
     source "{{ module_init }}" && \
     module purge && \
-    module load taxorrna/1.0 && \
-    taxo_rrna.py -n {{ bank_name }} -i {{ bank_root }}/{{ bank_name }}/fasta/with_label/ -b {{ bank_name}}_accVosoc.bdb
+    module load taxo_rrna/1.0 && \
+    taxodb_rrna.py -n {{ bank_name }} -i {{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa -b {{ bank_name}}_accVosoc.bdb
     chdir={{ bank_root }}/{{ bank_name }}/bdb/
 
 - name: creating "{{ bank_name }}" links to bdb indexes
@@ -55,3 +55,5 @@
     src={{bank_root}}/{{ bank_name }}/bdb/{{ bank_name}}_accVosoc.bdb
     dest={{bank_root}}/index/bdb/{{ bank_name}}_accVosoc.bdb
     state=link
+
+
