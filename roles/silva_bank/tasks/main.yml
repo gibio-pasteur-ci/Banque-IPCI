@@ -110,5 +110,10 @@
   loop_control:
     loop_var: blast_plus_vers
 
+- name: Starting taxo_rrna indexing
+  set_fact: taxo_rrna="{{ indexers | selectattr('tool', 'equalto', 'taxo_rrna')|list}}"
 - name: Calling taxo_rrna indexing
   include: common_tasks/taxo_rrna_indexing.yml
+  with_items: "{{ taxo_rrna[0].vers }}"
+  loop_control:
+    loop_var: taxo_rrna_vers
