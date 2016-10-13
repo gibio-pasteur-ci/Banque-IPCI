@@ -1,0 +1,12 @@
+---
+- name: Creating links to blast+ indexes
+  become: yes
+  become_user: "{{ bank_user }}"
+  file: >
+    src={{ item }}
+    dest={{bank_root}}/index/blast+/{{ blast_plus_vers }}/{{ item | basename }}
+    state=link
+  with_fileglob:
+    - "{{ bank_root }}/{{ bank_name }}/blast+/*.[np]??"
+
+

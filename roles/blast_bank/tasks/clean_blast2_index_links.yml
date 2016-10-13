@@ -1,0 +1,11 @@
+---
+
+- name: Cleaning "{{ bank_name }}" blast2 indexes links
+  become: yes
+  become_user: "{{ bank_user }}"
+  file: 
+    path={{ bank_root }}/index/blast2/{{ blast2_vers }}/{{ item | basename }} 
+    state=absent
+  with_fileglob:
+    - "{{ bank_root }}/{{ bank_name }}/{{ blast2_vers }}/*"  
+

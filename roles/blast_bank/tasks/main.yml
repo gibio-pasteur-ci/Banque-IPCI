@@ -13,28 +13,40 @@
 
 - include: common_tasks/setup_specific_bank_tree.yml
 
-- name: Creating blast2 directory for "{{ bank_name }}"
+- name: Creating blast+ directory for "{{ bank_name }}"
   become: yes
   become_user: "{{ bank_user }}"
-  file: path={{ bank_root }}/{{ bank_name }}/blast2
+  file: path={{ bank_root }}/{{ bank_name }}/blast+
         state=directory
         owner={{ bank_user }}
         group={{ bank_group }}
         mode=0775
 
-- name: Cleaning "{{ bank_name }}" blast2 indexes links
-  become: yes
-  become_user: "{{ bank_user }}"
-  file: path={{bank_root}}/index/blast2/{{ bank_name | basename }} state=absent
-  with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/blast2/*"
+- name: Get blast+ version
+  set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
+- name: Calling clean_index blast+
+  include: clean_blast+_index_links.yml
+  with_items: "{{ blast_plus[0].vers }}"
+  loop_control:
+    loop_var: blast_plus_vers 
+
+
+- name: Get blast2 version
+  set_fact: blast2="{{ indexers | selectattr('tool', 'equalto', 'blast2')|list}}"
+- name: Calling clean_index blast2
+  include: clean_blast2_index_links.yml
+  with_items: "{{ blast2[0].vers }}"
+  loop_control:
+    loop_var: blast2_vers
+
 
 - name: Cleaning "{{ bank_name }}" blast2 indexes
   become: yes
   become_user: "{{ bank_user }}"
   file: path={{ item }} state=absent
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/blast2/*.[pn]??"
+    - "{{ bank_root }}/{{ bank_name }}/blast+/*.[pn]??"
+
 
 - name: Downloading "{{ bank_name }}"
   become: yes
@@ -64,10 +76,10 @@
     become_user: "{{ bank_user }}"
     copy: 
       src={{ item  }} 
-      dest={{ bank_root }}/{{ bank_name }}/blast2/{{ bank_name }}{{ item | splitext | last }}
+      dest={{ bank_root }}/{{ bank_name }}/blast+/{{ bank_name }}{{ item | splitext | last }}
       remote_src=True
     with_fileglob:
-      - "{{ bank_root }}/{{ bank_name }}/uncompressed/*"
+      - "{{ bank_root }}/{{ bank_name }}/uncompressed/*.[pn]??"
 
   rescue:
     - name: Uncompressing gzip {{ bank_name }}
@@ -79,12 +91,14 @@
   when: mime.stat.mime_type in ['application/x-gzip', 'application/zip']
 
 
-- name: Creating links to blast2 indexes
-  become: yes
-  become_user: "{{ bank_user }}"
-  file: >
-    src={{ item }}
-    dest={{bank_root}}/index/blast2/{{ item | basename }}
-    state=link
-  with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/blast2/{{ bank_name }}.*"
+- name: Calling create_index blast+
+  include: create_blast+_index.yml
+  with_items: "{{ blast_plus[0].vers }}"
+  loop_control:
+    loop_var: blast_plus_vers 
+
+- name: Calling create_index blast2
+  include: create_blast2_index.yml
+  with_items: "{{ blast2[0].vers }}"
+  loop_control:
+    loop_var: blast2_vers 
