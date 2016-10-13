@@ -78,7 +78,7 @@
   become_user: "{{ bank_user }}"
   file: >
     src={{ item }}
-    dest={{bank_root}}/index/blast2/{{ blast2_vers }}/{{ bank_name }}{{ item | splitext | last }}
+    dest={{bank_root}}/index/blast2/{{ blast2_vers }}/{{ item | basename  }}
     state=link
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/blast2/{{ blast2_vers }}/{{ bank_name }}.*"
+    - "{{ bank_root }}/{{ bank_name }}/blast2/{{ blast2_vers }}/*.[pn]??"
