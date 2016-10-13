@@ -37,3 +37,9 @@ indexers:
   - tool: gatk
     vers:
       - '2.4-9'
+  - tool: taxo_rrna
+    vers:
+      - '1.0'
+  - tool: taxodb_ncbi
+    vers:
+      - '1.3'
