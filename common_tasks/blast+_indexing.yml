@@ -63,4 +63,4 @@
     dest={{bank_root}}/index/blast+/{{ blast_plus_vers }}/{{ item | basename }}
     state=link
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/*[pn]??"
+    - "{{ bank_root }}/{{ bank_name }}/blast+/{{ blast_plus_vers }}/*.[pn]??"
