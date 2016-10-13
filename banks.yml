@@ -44,4 +44,7 @@
                   "http://genoweb.toulouse.inra.fr/frogs_databanks/assignation/18S/silva_119-1_18S.tar.gz", 
                   "http://genoweb.toulouse.inra.fr/frogs_databanks/assignation/18S/silva_123_18S.tar.gz", 
                   "http://genoweb.toulouse.inra.fr/frogs_databanks/assignation/23S/silva_123_23S.tar.gz"]}
+    - {role: taxodb_bank, tags: ['taxodb'],
+       bank_name: taxodb,
+       bank_src: "ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz"}
 
