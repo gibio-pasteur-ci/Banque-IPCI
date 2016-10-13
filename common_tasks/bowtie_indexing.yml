@@ -50,7 +50,7 @@
     source "{{ module_init }}" && \
     module purge && \
     module load bowtie/{{ bowtie_vers }} && \
-    bowtie-build -q {{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa {{ bank_root }}/{{ bank_name }}/bowtie/{{ bowtie_vers }}/{{ bank_name }}
+    bowtie-build -q {{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa {{ bank_root }}/{{ bank_name }}/bowtie/{{ bowtie_vers }}/{{ bank_name }}.fa
 
 - name: Creating links for "{{ bank_name }}/{{ bowtie_vers }}" bowtie indexes
   become: yes
