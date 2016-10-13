@@ -86,7 +86,7 @@
 
 - include: common_tasks/link_fasta.yml
 
-- set_fact: blast2="{{ indexers | selectattr('tool', 'equalto', 'blast')|list}}"
+- set_fact: blast2="{{ indexers | selectattr('tool', 'equalto', 'blast2')|list}}"
 - name: Start blast2 indexing
   include: common_tasks/blast2_indexing.yml
   with_items: "{{ blast2[0].vers }}"
