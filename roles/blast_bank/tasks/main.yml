@@ -13,8 +13,6 @@
 
 - include: common_tasks/setup_specific_bank_tree.yml
 
-- include: common_tasks/get_data.yml
-
 - name: Creating blast2 directory for "{{ bank_name }}"
   become: yes
   become_user: "{{ bank_user }}"
@@ -36,20 +34,50 @@
   become_user: "{{ bank_user }}"
   file: path={{ item }} state=absent
   with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/blast2/*"
+    - "{{ bank_root }}/{{ bank_name }}/blast2/*.[pn]??"
 
-- name: Copying and renaming "{{ bank_name }}" blast indexes in right directory
+- name: Downloading "{{ bank_name }}"
   become: yes
   become_user: "{{ bank_user }}"
-  copy:
-    src={{ item }}
-    dest={{ bank_root }}/{{ bank_name }}/blast2/{{ bank_name }}{{ item | splitext | last }}
-    remote_src=True
-    owner={{ bank_user }}
-    group={{ bank_group }}
-    mode=0644
-  with_fileglob:
-    - "{{ bank_root }}/{{ bank_name }}/uncompressed/*.n*"
+  # because of bug https://github.com/ansible/ansible-modules-core/issues/3661
+  # on ansible version 2.0.2.0 we cannot use get_url : workaround use command
+  #  get_url: ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/Mycobacterium_tuberculosis_CDC1551_uid223/AE000516.gbk
+  #curl ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/Mycobacterium_tuberculosis_CDC1551_uid223/AE000516.gbk -o {{bank_name}}.gbk
+  command: >
+    curl {{ bank_src }} -o {{ bank_root }}/distbanks/{{ bank_src|basename }}
+    creates={{ bank_root }}/distbanks/{{ bank_src|basename }}
+  
+- name: Gessing mime type
+  become: yes
+  become_user: "{{ bank_user }}"
+  stat: path={{ bank_root }}/distbanks/{{ bank_src|basename }} mime=True
+  register: mime
+
+- block:
+  - name: Uncompressing {{ bank_name }}
+    become: yes
+    become_user: "{{ bank_user }}"
+    unarchive: src={{ bank_root }}/distbanks/{{ bank_src|basename }} dest={{ bank_root }}/{{ bank_name }}/uncompressed/
+
+  - name: Renaming {{ bank_name }}
+    become: yes
+    become_user: "{{ bank_user }}"
+    copy: 
+      src={{ item  }} 
+      dest={{ bank_root }}/{{ bank_name }}/blast2/{{ bank_name }}{{ item | splitext | last }}
+      remote_src=True
+    with_fileglob:
+      - "{{ bank_root }}/{{ bank_name }}/uncompressed/*"
+
+  rescue:
+    - name: Uncompressing gzip {{ bank_name }}
+      become: yes
+      become_user: "{{ bank_user }}"
+      shell: >
+        gunzip -c {{ bank_root }}/distbanks/{{ bank_src|basename }} > {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_name }}
+
+  when: mime.stat.mime_type in ['application/x-gzip', 'application/zip']
+
 
 - name: Creating links to blast2 indexes
   become: yes
