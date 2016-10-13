@@ -60,7 +60,7 @@
     source "{{ module_init }}" && \
     module purge && \
     module load bwa/{{ bwa_vers }} && \
-    bwa index -p {{ bank_root }}/{{ bank_name }}/bwa/{{ bwa_vers }}/{{ bank_name }} {{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa
+    bwa index -p {{ bank_root }}/{{ bank_name }}/bwa/{{ bwa_vers }}/{{ bank_name }}.fa {{ bank_root }}/{{ bank_name }}/fasta/without_label/{{ bank_name }}.fa
   when: not large
 
 - name: Creating links for "{{ bank_name }}/{{ bwa_vers }}" bwa indexes
