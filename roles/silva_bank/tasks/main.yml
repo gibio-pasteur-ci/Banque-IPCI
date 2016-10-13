@@ -86,26 +86,29 @@
 
 - include: common_tasks/link_fasta.yml
 
-- set_fact: blast2="{{ indexers | selectattr('tool', 'equalto', 'blast2')|list}}"
-- name: Start blast2 indexing
+- name: Starting blast2 indexing
+  set_fact: blast2="{{ indexers | selectattr('tool', 'equalto', 'blast2')|list}}"
+- name: Calling blast2 indexing
   include: common_tasks/blast2_indexing.yml
   with_items: "{{ blast2[0].vers }}"
   loop_control:
     loop_var: blast2_vers
 
-- set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
-- name: Start blast+ indexing
+- name: Starting blast+ indexing
+  set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
+- name: Calling blast+ indexing
   include: common_tasks/blast+_indexing.yml
   with_items: "{{ blast_plus[0].vers }}"
   loop_control:
     loop_var: blast_plus_vers
 
-- set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
-- name: Start megablast indexing
+- name: Starting megablast indexing
+  set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
+- name: Calling megablast indexing
   include: common_tasks/megablast_indexing.yml
   with_items: "{{ blast_plus[0].vers }}"
   loop_control:
     loop_var: blast_plus_vers
 
-- name: Start taxo_rrna indexing
+- name: Calling taxo_rrna indexing
   include: common_tasks/taxo_rrna_indexing.yml

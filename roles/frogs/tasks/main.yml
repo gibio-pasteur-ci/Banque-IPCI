@@ -59,8 +59,9 @@
   with_fileglob:
      - "{{ bank_root }}/{{ bank_name }}/fasta/*/*.fasta"
 
-- set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
-- name: Start blast+ indexing
+- name: Starting gatk indexing
+  set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
+- name: Calling blast+ indexing
   include: common_tasks/blast+_indexing.yml
   with_items: "{{ blast_plus[0].vers }}"
   loop_control:

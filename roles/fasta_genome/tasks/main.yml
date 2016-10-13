@@ -11,50 +11,57 @@
 
 - include: ../fasta_bank/tasks/main.yml
 
-- set_fact: bwa="{{ indexers | selectattr('tool', 'equalto', 'bwa')|list}}"
-- name: Start bwa indexing
+- name: Starting bwa indexing
+  set_fact: bwa="{{ indexers | selectattr('tool', 'equalto', 'bwa')|list}}"
+- name: calling bwa indexing
   include: common_tasks/bwa_indexing.yml large={{ bwa[0].large | default( false ) }}
   with_items: "{{ bwa[0].vers }}"
   loop_control:
     loop_var: bwa_vers
 
-- set_fact: soap="{{ indexers | selectattr('tool', 'equalto', 'soap')|list}}"
-- name: Start soap indexing
+- name: Starting soap indexing
+  set_fact: soap="{{ indexers | selectattr('tool', 'equalto', 'soap')|list}}"
+- name: calling soap indexing
   include: common_tasks/soap_indexing.yml
   with_items: "{{ soap[0].vers }}"
   loop_control:
     loop_var: soap_vers
 
-- set_fact: bowtie="{{ indexers | selectattr('tool', 'equalto', 'bowtie')|list}}"
-- name: Start bowtie indexing
+- name: Starting bowtie indexing
+  set_fact: bowtie="{{ indexers | selectattr('tool', 'equalto', 'bowtie')|list}}"
+- name: calling bowtie indexing
   include: common_tasks/bowtie_indexing.yml
   with_items: "{{ bowtie[0].vers }}"
   loop_control:
     loop_var: bowtie_vers
 
-- set_fact: bowtie2="{{ indexers | selectattr('tool', 'equalto', 'bowtie2')|list}}"
-- name: Start bowtie2 indexing
+- name: Starting bowtie2 indexing
+  set_fact: bowtie2="{{ indexers | selectattr('tool', 'equalto', 'bowtie2')|list}}"
+- name: calling bowtie2 indexing
   include: common_tasks/bowtie2_indexing.yml
   with_items: "{{ bowtie2[0].vers }}"
   loop_control:
     loop_var: bowtie2_vers
 
-- set_fact: picard="{{ indexers | selectattr('tool', 'equalto', 'picard')|list}}"
-- name: Start picard indexing
+- name: Starting picard indexing
+  set_fact: picard="{{ indexers | selectattr('tool', 'equalto', 'picard')|list}}"
+- name: calling picard indexing
   include: common_tasks/picard_indexing.yml
   with_items: "{{ picard[0].vers }}"
   loop_control:
     loop_var: picard_vers
 
-- set_fact: samtools="{{ indexers | selectattr('tool', 'equalto', 'samtools')|list}}"
-- name: Start samtools indexing
+- name: Starting samtools indexing
+  set_fact: samtools="{{ indexers | selectattr('tool', 'equalto', 'samtools')|list}}"
+- name: calling samtools indexing
   include: common_tasks/samtools_indexing.yml
   with_items: "{{ samtools[0].vers }}"
   loop_control:
     loop_var: samtools_vers
 
-- set_fact: gatk="{{ indexers | selectattr('tool', 'equalto', 'gatk')|list}}"
-- name: Start blast+ indexing
+- name: Starting gatk indexing
+  set_fact: gatk="{{ indexers | selectattr('tool', 'equalto', 'gatk')|list}}"
+- name: calling blast+ indexing
   include: common_tasks/gatk_indexing.yml samtools_vers={{ samtools[0].vers[0] }} picard_vers={{ picard[0].vers[0] }}
   with_items: "{{ gatk[0].vers }}"
   loop_control:

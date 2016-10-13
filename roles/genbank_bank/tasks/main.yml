@@ -33,22 +33,25 @@
 
 - include: common_tasks/link_fasta.yml
 
-- set_fact: golden="{{ indexers | selectattr('tool', 'equalto', 'golden')|list}}"
-- name: Start golden indexing
+- name: Starting golden indexing
+  set_fact: golden="{{ indexers | selectattr('tool', 'equalto', 'golden')|list}}"
+- name: Calling golden indexing
   include: common_tasks/golden_indexing.yml
   with_items: "{{ golden[0].vers }}"
   loop_control:
     loop_var: golden_vers
 
-- set_fact: blast2="{{ indexers | selectattr('tool', 'equalto', 'blast2')|list}}"
-- name: Start blast2 indexing
+- name: Starting blast2 indexing
+  set_fact: blast2="{{ indexers | selectattr('tool', 'equalto', 'blast2')|list}}"
+- name: Calling blast2 indexing
   include: common_tasks/blast2_indexing.yml
   with_items: "{{ blast2[0].vers }}"
   loop_control:
     loop_var: blast2_vers
 
-- set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
-- name: Start blast+ indexing
+- name: Starting blast_plus indexing
+  set_fact: blast_plus="{{ indexers | selectattr('tool', 'equalto', 'blast+')|list}}"
+- name: Calling blast+ indexing
   include: common_tasks/blast+_indexing.yml
   with_items: "{{ blast_plus[0].vers }}"
   loop_control:
