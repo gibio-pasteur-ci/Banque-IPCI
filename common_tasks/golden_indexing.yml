@@ -35,7 +35,7 @@
     source "{{ module_init }}" && \
     module purge && \
     module load golden/{{ golden_vers }} && \
-    goldin -d {{ bank_name }} {{ bank_name }} {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_name }}.gbk
+    goldin -d {{ bank_name }} {{ bank_name }} {{ bank_root }}/{{ bank_name }}/uncompressed/{{ bank_name }}.{{ ext | default('gbk') }}
     chdir={{ bank_root }}/{{ bank_name }}/golden/{{ golden_vers }}
 
 - name: creating "{{ bank_name }}/{{ golden_vers }}" links to golden indexes
