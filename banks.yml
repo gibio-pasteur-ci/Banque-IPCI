@@ -47,4 +47,9 @@
     - {role: taxodb_bank, tags: ['taxodb'],
        bank_name: taxodb,
        bank_src: "ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz"}
-
+    - {role: prosite, tags: ['prosite'],
+       bank_name: prosite,
+       bank_src: ["ftp://ftp.expasy.ch/databases/prosite/prosite.dat",
+                  "ftp://ftp.expasy.ch/databases/prosite/prosite.doc",
+                  "ftp://ftp.expasy.ch/databases/prosite/prosite.lis"]
+      } 

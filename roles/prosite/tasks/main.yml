@@ -1,0 +1,46 @@
+---
+
+- include: common_tasks/setup_specific_bank_tree.yml
+
+
+- name: Creating General prosite directory for "{{ bank_name }}"
+  become: yes
+  become_user: "{{ bank_user }}"
+  file: path={{ bank_root }}/index/prosite
+        state=directory
+        owner={{ bank_user }}
+        group={{ bank_group }}
+        mode=0775
+
+
+- name: Downloading prosite
+  become: yes
+  become_user: "{{ bank_user }}"
+  # because of bug https://github.com/ansible/ansible-modules-core/issues/3661
+  # on ansible version 2.0.2.0 we cannot use get_url : workaround use command
+  #  get_url: ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/Mycobacterium_tuberculosis_CDC1551_uid223/AE000516.gbk
+  #curl ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/Mycobacterium_tuberculosis_CDC1551_uid223/AE000516.gbk -o {{bank_name}}.gbk
+  command: >
+    curl {{ item }} -o {{ bank_root }}/distbanks/{{ item|basename }}
+    creates={{ bank_root }}/distbanks/{{ item|basename }}
+  with_items: bank_src
+
+- name: copy files into uncompressed directory
+  become: yes
+  become_user: "{{ bank_user }}"
+  copy: 
+    src={{ item  }}
+    dest={{ bank_root }}/{{ bank_name }}/uncompressed/{{ item | basename }}
+    remote_src=True
+  with_fileglob:
+    - "{{ bank_root }}/distbanks/prosite.*"
+
+
+- name: Starting golden indexing
+  set_fact: golden="{{ indexers | selectattr('tool', 'equalto', 'golden')|list}}"
+- name: Calling golden indexing
+  include: common_tasks/golden_indexing.yml ext='dat'
+  with_items: "{{ golden[0].vers }}"
+  loop_control:
+    loop_var: golden_vers
+    
